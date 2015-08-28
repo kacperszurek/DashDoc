@@ -50,5 +50,11 @@ class DashDocCommand(sublime_plugin.TextCommand):
         syntax_sensitive = flip_syntax_sensitive ^ syntax_sensitive_as_default
         keys = docset_keys(self.view, syntax_docset_map) if syntax_sensitive else []
 
-        subprocess.call(['/usr/bin/open', '-g',
-                         'dash-plugin://keys=%s&query=%s' % (','.join(keys), quote(query))])
+        platform = sublime.platform()
+
+        if platform == 'osx':
+            subprocess.call(['/usr/bin/open', '-g', 'dash-plugin://keys=%s&query=%s' % (','.join(keys), quote(query))])
+
+        elif platform == 'windows':
+            CREATE_NO_WINDOW = 0x8000000
+            subprocess.call('cmd.exe /c start "" "dash-plugin://keys=%s&query=%s"' % (','.join(keys), quote(query)), creationflags=CREATE_NO_WINDOW)            
